@@ -27,7 +27,7 @@ jobs:
       - name: Package and push charts to OCI
         env:
           OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.repository }}
+          REPO: helm-charts
         run: |
           set -euo pipefail
           mkdir -p packaged-charts
