@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.2/.schema/devbox.schema.json",
+  "packages": [
+    "helm@latest",
+    "helm-ls@latest"
+  ],
+  "env": {
+    "EDITOR":                  "code -w",
+    "GIT_EDITOR":              "code -w",
+    "HISTDIR":                 "$DEVBOX_PROJECT_ROOT/.devbox",
+    "ZSH_EXTRA_PLUGINS":       "kubectl",
+    "DEVBOX_COREPACK_ENABLED": "true"
+  },
+  "shell": {}
+}
