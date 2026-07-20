@@ -1,0 +1,42 @@
+name: Publish Charts to OCI (GitHub Packages)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish-oci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      - name: Authenticate to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
+
+      - name: Package and push charts to OCI
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p packaged-charts
+          for d in charts/*; do
+            if [ -f "$d/Chart.yaml" ]; then
+              echo "Packaging $d"
+              helm package --destination packaged-charts "$d"
+              tgz=$(ls packaged-charts/*.tgz | head -n1)
+              echo "Pushing $tgz -> oci://ghcr.io/${OWNER}/${REPO}"
+              helm push "$tgz" oci://ghcr.io/${OWNER}/${REPO}
+            fi
+          done
